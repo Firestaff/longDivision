@@ -417,8 +417,8 @@ const Notebook = () => {
           <div>Примеров:<span className="number">{examples}</span></div>
           <div>Ошибок:<span className="number">{mistakes}</span></div>
           <div>Всего ошибок:<span className="number">{allMistakes}</span></div>
-          <div>Ширина:<span className="number">{window.innerWidth}</span></div>
-          <div>Высота:<span className="number">{window.innerHeight}</span></div>
+          {/* <div>Ширина:<span className="number">{window.innerWidth}</span></div>
+          <div>Высота:<span className="number">{window.innerHeight}</span></div> */}
         </div>
         <button onClick={generateExample}>Новый пример</button>
 				<select
