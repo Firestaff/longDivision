@@ -1,4 +1,5 @@
-import Notebook from "./components/Notebook";
+import Notebook from './components/Notebook';
+import './components/Notebook.css';
 
 function App() {
   return (
@@ -9,4 +10,3 @@ function App() {
 }
 
 export default App;
-

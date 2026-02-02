@@ -1,16 +1,167 @@
-# React + Vite
+# Long Division - Math Game
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## О проекте
 
-Currently, two official plugins are available:
+Интерактивная математическая игра для изучения деления, сложения, вычитания и умножения. Проект разработан с использованием React и Vite.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Стек технологий
 
-## React Compiler
+- **React 19.2.0** - UI библиотека
+- **Vite 7.2.4** - сборщик и dev-сервер
+- **ESLint** - линтинг кода
+- **TypeScript** - типизация (планируется)
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Структура проекта
 
-## Expanding the ESLint configuration
+```
+src/
+├── components/          # UI компоненты
+│   ├── Grid/           # Игровое поле
+│   ├── Controls/       # Панель управления
+│   ├── DigitPanel/     # Панель с цифрами
+│   └── Popup/          # Всплывающие окна
+├── hooks/              # Пользовательские хуки
+├── math/               # Бизнес-логика
+│   ├── mathEngine.jsx  # Математические операции
+│   └── gameLogic.jsx   # Игровая логика
+├── types/              # TypeScript типы
+└── tests/              # Тесты
+```
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Компоненты
+
+### Notebook
+Основной компонент, содержащий всю игру.
+
+### Grid
+Игровое поле с ячейками для цифр.
+
+### Controls
+Панель управления с настройками сложности и операциями.
+
+### DigitPanel
+Панель с цифрами для ввода ответов.
+
+### Popup
+Всплывающие окна для сообщений и подсказок.
+
+## Бизнес-логика
+
+### MathEngine
+Содержит математические операции:
+- `divide(a, b)` - деление
+- `multiply(a, b)` - умножение
+- `add(a, b)` - сложение
+- `subtract(a, b)` - вычитание
+
+### GameLogic
+Управляет игровым процессом:
+- Генерация примеров
+- Проверка ответов
+- Отслеживание прогресса
+
+## Хуки
+
+### useGameLogic
+Основной хук для управления состоянием игры.
+
+### useWindowSize
+Отслеживает размер окна для адаптивности.
+
+## Типизация
+
+Проект использует TypeScript для строгой типизации. Основные типы:
+
+- `Cell` - тип ячейки
+- `GameStep` - шаг в решении примера
+- `GameState` - состояние игры
+- `Operator` - тип оператора
+- `Difficulty` - уровень сложности
+
+## Адаптивность
+
+Игра адаптирована для различных устройств:
+- Десктоп
+- Планшеты
+- Мобильные телефоны
+
+## CSS оптимизация
+
+- CSS переменные для темы
+- Анимации для UX
+- Медиазапросы для адаптивности
+- Оптимизированные селекторы
+
+## Тестирование
+
+Проект включает модульные тесты для:
+- Математических операций
+- Генерации примеров
+- Проверки ответов
+- Игровой логики
+
+## Установка и запуск
+
+```bash
+# Установка зависимостей
+npm install
+
+# Запуск в development режиме
+npm run dev
+
+# Сборка для production
+npm run build
+
+# Запуск линтера
+npm run lint
+```
+
+## Структура типов
+
+```typescript
+interface Cell {
+  x: number;
+  y: number;
+  value: string;
+  isUnderscore?: boolean;
+  isResultStart?: boolean;
+  isWrongDigit?: boolean;
+  fontSize?: number;
+}
+
+type Operator = '+' | '-' | '*' | '/';
+type Difficulty = 1 | 10 | 100;
+```
+
+## Конфигурация
+
+### Уровни сложности
+- `1` - Легкий (однозначные числа)
+- `10` - Нормальный (двузначные числа)
+- `100` - Сложный (трехзначные числа)
+
+### Операторы
+- `+` - Сложение
+- `-` - Вычитание
+- `*` - Умножение
+- `/` - Деление
+
+## Особенности
+
+- **Интерактивное обучение** - пошаговое решение примеров
+- **Адаптивный интерфейс** - работает на всех устройствах
+- **Визуальная обратная связь** - подсветка правильных/неправильных ответов
+- **Прогресс-трекинг** - отслеживание решенных примеров и ошибок
+
+## Будущие улучшения
+
+- [ ] Добавить темную тему
+- [ ] Реализовать сохранение прогресса
+- [ ] Добавить режим таймера
+- [ ] Создать систему достижений
+- [ ] Добавить мультиплеер режим
+- [ ] Интегрировать с системой обучения
+
+## Лицензия
+
+MIT License
