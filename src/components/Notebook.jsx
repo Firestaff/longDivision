@@ -3,11 +3,13 @@ import { useState, useEffect } from "react";
 import "./Notebook.css";
 
 let planIndex,
-	divider,
-	result,
-	divisible = 0;
+	operandOne,
+	operandTwo,
+	result = 0;
 let exampleSize = 10;
 let cellSize = 0;
+let operator = "/";
+let selectedOperator = "?";
 const plan = [];
 
 const Notebook = () => {
@@ -38,6 +40,7 @@ const Notebook = () => {
 	}
 
 	const generateExample = () => {
+		setOperator();
 		generateValues();
 
 		setShowCongratulations(false);
@@ -48,21 +51,6 @@ const Notebook = () => {
 		setMistakes(0);
 		setExamples((prev) => prev + 1);
 
-		const divisibleDigits = splitDigits(divisible);
-		const dividerDigits = splitDigits(divider);
-
-		divisibleDigits.forEach((digit, i) => {
-			placeDigits(START_X - divisibleDigits.length + i, START_Y, [digit]);
-		});
-
-		dividerDigits.forEach((digit, i) => {
-			placeDigits(START_X + i, START_Y, [digit], {
-				isUnderscore: true,
-				isResultStart: i === 0,
-			});
-		});
-
-		updateCurrentCell(START_X, START_Y + 1, true);
 		solveExample();
 	};
 
@@ -87,7 +75,7 @@ const Notebook = () => {
 		}
 
 		if (step.isResult) {
-			placeMinus();
+			placeSign(operator === "/" ? "−" : "+", step.xOffset);
 		}
 
 		planIndex++;
@@ -145,14 +133,13 @@ const Notebook = () => {
 		};
 	};
 
-	const placeMinus = () => {
-		if (cells.length > 0) {
-			const y = planIndex === 0 ? START_Y : plan[planIndex - 1].y;
-			const x = Math.min(
-				...cells.filter((cell) => cell.y === y).map((cell) => cell.x)
-			);
-			placeDigits(x - 0.7, y + 0.1, ["_"]);
-		}
+	const placeSign = (sign = operator, xOffset = 0) => {
+		const y = planIndex === 0 ? START_Y : plan[planIndex - 1].y;
+		const x = planIndex === 0
+			? START_X - splitDigits(operandOne).length
+			: Math.min(...cells.filter((cell) => cell.y === y).map((cell) => cell.x)
+		);
+		placeDigits(x - 0.7 - xOffset, y + 0.45, [sign]);
 	};
 
 	const updateWrongDigit = (startX, startY, isWrong) => {
@@ -181,6 +168,12 @@ const Notebook = () => {
 
 	const updateExampleSize = (size) => {
 		exampleSize = Number(size);
+		generateExample();
+		setExamples((prev) => prev - 1);
+	};
+
+	const updateExampleOperand = (newOperator) => {
+		selectedOperator = newOperator;
 		generateExample();
 		setExamples((prev) => prev - 1);
 	};
@@ -270,21 +263,78 @@ const Notebook = () => {
 	}
 
 	function generateValues() {
-		do {
-			divider = randInt(1 * exampleSize + 1, 10 * exampleSize);
-			result = randInt(100, 10000);
-		} while (divider % 10 === 0 || result % 10 === 0);
-
-		divisible = divider * result;
-		return [divider, result, divisible];
+		switch (operator) {
+			case "/":
+				do {
+					operandTwo = randInt(1 * exampleSize + 1, 10 * exampleSize);
+					result = randInt(100, 10000);
+				} while (operandTwo % 10 === 0 || result % 10 === 0);
+		
+				operandOne = operandTwo * result;
+				break;
+			
+			case "−":
+				operandTwo = randInt(100 * exampleSize + 1, 10000 * exampleSize);
+				result = randInt(100 * exampleSize + 1, 10000 * exampleSize);
+				operandOne = operandTwo + result; 
+				break;
+			
+			case "+":
+				operandOne = randInt(100 * exampleSize + 1, 10000 * exampleSize);
+				operandTwo = randInt(10 * exampleSize + 1, 1000 * exampleSize);
+				result = operandOne + operandTwo; 
+				break;
+			
+			case "×":
+				do {
+					operandOne = randInt(100, 10000);
+					operandTwo = randInt(1 * exampleSize + 1, 10 * exampleSize);
+					result = randInt(100, 10000);
+				} while (operandOne % 10 === 0 || operandTwo % 10 === 0);
+		
+				result = operandOne * operandTwo;
+				break;
+		}
 	}
 
 	function solveExample() {
+		switch (operator) {
+			case "/":
+				solveDivision();
+				break;
+			
+			case "−":
+			case "+":
+				solveSumSub();
+				break;
+			
+			case "×":
+				solveMultiplication();
+				break;
+		}
+	}
+
+	function solveDivision() {
+		const divisibleDigits = splitDigits(operandOne);
+		const dividerDigits = splitDigits(operandTwo);
+
+		divisibleDigits.forEach((digit, i) => {
+			placeDigits(START_X - divisibleDigits.length + i, START_Y, [digit]);
+		});
+
+		dividerDigits.forEach((digit, i) => {
+			placeDigits(START_X + i, START_Y, [digit], {
+				isUnderscore: true,
+				isResultStart: i === 0,
+			});
+		});
+
+		updateCurrentCell(START_X, START_Y + 1, true);
+
 		plan.length = 0;
 		planIndex = 0;
 		const resultDigits = splitDigits(result);
-		const divisibleDigits = splitDigits(divisible);
-		let remain = divisible;
+		let remain = operandOne;
 		let currentY = START_Y;
 
 		resultDigits.forEach((resDigit, index) => {
@@ -297,7 +347,7 @@ const Notebook = () => {
 
 			const offset = resultDigits.length - index - 1;
 			const currentX = START_X - offset;
-			const localSub = resDigit * divider;
+			const localSub = resDigit * operandTwo;
 			const localSubDigits = splitDigits(localSub);
 			remain = remain - localSub * 10 ** offset;
 			const remainDigits = splitDigits(remain);
@@ -342,6 +392,94 @@ const Notebook = () => {
 				});
 			}
 		});
+	}
+
+	function solveMultiplication() {
+		plan.length = 0;
+		planIndex = 0;
+		const opOneDigits = splitDigits(operandOne);
+		let opTwoDigits = splitDigits(operandTwo);
+		const resultDigits = splitDigits(result);
+
+		opOneDigits.forEach((digit, i) => {
+			placeDigits(START_X - opOneDigits.length + i, START_Y, [digit]);
+		});
+
+		placeSign();
+
+		opTwoDigits.forEach((digit, i) => {
+			placeDigits(START_X - opTwoDigits.length + i, START_Y + 1, [digit], { isUnderscore: true });
+		});
+
+		opTwoDigits = opTwoDigits.reverse();
+		updateCurrentCell(START_X - 1, START_Y + 2);
+
+		plan.length = 0;
+		planIndex = 0;
+		let currentY = START_Y + 2;
+		let currentX = START_X - 1;
+
+		opTwoDigits.forEach((digit, index) => {
+			if (digit != 0) {
+				const localResult = digit * operandOne;
+				const localResultDigits = splitDigits(localResult);
+				
+				localResultDigits.reverse().forEach((d, i) => {
+					const isUnderscore = index === opTwoDigits.length - 1;
+					const isWithSign = !isUnderscore && i === localResultDigits.length - 1;
+					plan.push({
+						value: d,
+						x: currentX - i,
+						y: currentY,
+						isResult: isWithSign,
+						isUnderscore: isUnderscore,
+						xOffset: isWithSign ? splitDigits(opTwoDigits[index + 1] * operandOne).length - localResultDigits.length + 1 : 1,
+					});
+				});
+			}
+				
+			currentY += 1;
+			currentX -= 1;
+		});
+
+		resultDigits.reverse().forEach((resDigit, i) => {
+			plan.push({ value: resDigit, x: START_X - i - 1, y: currentY });
+		});
+	}
+
+	function solveSumSub() {
+		plan.length = 0;
+		planIndex = 0;
+		const opOneDigits = splitDigits(operandOne);
+		const opTwoDigits = splitDigits(operandTwo);
+		const resultDigits = splitDigits(result);
+
+		opOneDigits.forEach((digit, i) => {
+			placeDigits(START_X - opOneDigits.length + i, START_Y, [digit]);
+		});
+		
+		opTwoDigits.forEach((digit, i) => {
+			placeDigits(START_X - opTwoDigits.length + i, START_Y + 1, [digit], { isUnderscore: true });
+		});
+		
+		placeSign(operator, Math.max(0, opTwoDigits.length - opOneDigits.length));
+		updateCurrentCell(START_X - 1, START_Y + 2);
+
+		resultDigits.reverse().forEach((resDigit, i) => {
+			plan.push({ value: resDigit, x: START_X - i - 1, y: START_Y + 2 });
+		});
+	}
+
+	function setOperator()
+	{
+		if (selectedOperator === "?") {
+			const ops = ["+", "−", "×", "/"];
+			const index = Math.floor(Math.random() * ops.length);
+			operator = ops[index];
+		}
+		else {
+			operator = selectedOperator;
+		}
 	}
 
 	function randInt(min, max) {
@@ -420,13 +558,22 @@ const Notebook = () => {
           {/* <div>Ширина:<span className="number">{window.innerWidth}</span></div>
           <div>Высота:<span className="number">{window.innerHeight}</span></div> */}
         </div>
-        <button onClick={generateExample}>Новый пример</button>
+				<button onClick={generateExample}>Новый пример</button>
+				<select
+					onChange={(e) => updateExampleOperand(e.target.value)}
+          defaultValue="?">
+					<option value="+">Сложение</option>
+					<option value="−">Вычитание</option>
+					<option value="×">Умножение</option>
+					<option value="/">Деление</option>
+					<option value="?">Случайно</option>
+				</select>
 				<select
 					onChange={(e) => updateExampleSize(e.target.value)}
           defaultValue="10">
-					<option value="1">Однозначное</option>
-					<option value="10">Двузначное</option>
-					<option value="100">Трехзначное</option>
+					<option value="1">Легко</option>
+					<option value="10">Нормально</option>
+					<option value="100">Сложно</option>
 				</select>
 			</div>
 
