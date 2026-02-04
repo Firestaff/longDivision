@@ -7,7 +7,7 @@ export default defineConfig({
     outDir: 'docs',
     emptyOutDir: true,
   },
-  base: '/', 
+  base: '/longDivision/', 
   plugins: [react()],
   server: {
     host: '0.0.0.0',
