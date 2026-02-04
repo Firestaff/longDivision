@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0  950 950" preserveAspectRatio="xMinYMin meet">
+  <defs id="svgEditorDefs">
+    <pattern height="10" id="hatch-black-45" patternTransform="rotate(45) scale(0.4)" patternUnits="userSpaceOnUse" viewBox="0 0 10 10" width="10" x="0" y="0">
+      <line style="stroke:black;stroke-width:1px;" x1="0" x2="10" y1="5" y2="5" />
+    </pattern>
+  </defs>
+  <circle id="e3_circle" cx="250" cy="190" style="stroke:black;stroke-width:90px;fill:none" r="100" />
+  <circle id="e4_circle" cx="715" cy="190" style="stroke:black;stroke-width:90px;fill:none" r="100" />
+  <circle id="e5_circle" cx="715" cy="652" style="stroke:black;stroke-width:90px;fill:none" r="100" />
+  <path d="M481.342,7.93v826.227" style="fill:none;stroke:black;stroke-width:70px" id="e5_pathV" />
+  <path d="M489.314,427.521h443.511" style="fill:none;stroke:black;stroke-width:70px" id="e7_pathH" />
+</svg>
