@@ -290,7 +290,7 @@ const Notebook = () => {
 					operandOne = randInt(100, 10000);
 					operandTwo = randInt(1 * exampleSize + 1, 10 * exampleSize);
 					result = randInt(100, 10000);
-				} while (operandOne % 10 === 0 || operandTwo % 10 === 0);
+				} while (operandOne % 10 === 0 || operandTwo % 10 === 0 || operandTwo % 11 === 0);
 		
 				result = operandOne * operandTwo;
 				break;
@@ -420,25 +420,34 @@ const Notebook = () => {
 		let currentX = START_X - 1;
 
 		opTwoDigits.forEach((digit, index) => {
-			if (digit != 0) {
+			if (digit != 0 && opTwoDigits.length > 1) {
 				const localResult = digit * operandOne;
 				const localResultDigits = splitDigits(localResult);
 				
 				localResultDigits.reverse().forEach((d, i) => {
 					const isUnderscore = index === opTwoDigits.length - 1;
 					const isWithSign = !isUnderscore && i === localResultDigits.length - 1;
+					let offset = 0;
+
+					if (isWithSign) {
+						const nextDigitIndexOffset = opTwoDigits[index + 1] != 0 ? 1 : 2;
+						const nextMultiplicationDigits = splitDigits(opTwoDigits[index + nextDigitIndexOffset] * operandOne);
+						offset = nextMultiplicationDigits.length - localResultDigits.length + nextDigitIndexOffset;
+					}
+
 					plan.push({
 						value: d,
 						x: currentX - i,
 						y: currentY,
 						isResult: isWithSign,
 						isUnderscore: isUnderscore,
-						xOffset: isWithSign ? splitDigits(opTwoDigits[index + 1] * operandOne).length - localResultDigits.length + 1 : 1,
+						xOffset: offset,
 					});
 				});
-			}
 				
-			currentY += 1;
+				currentY += 1;
+			}
+			
 			currentX -= 1;
 		});
 
