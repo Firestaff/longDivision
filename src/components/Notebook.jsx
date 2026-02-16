@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import "./Notebook.css";
 
 let planIndex,
@@ -54,7 +54,7 @@ const Notebook = () => {
 		solveExample();
 	};
 
-	const handleDigitClick = (digit) => {
+	const handleDigitClick = useThrottle((digit) => {
 		if (!currentCell) {
 			return;
 		}
@@ -87,7 +87,7 @@ const Notebook = () => {
 			const nextStep = plan[planIndex];
 			updateCurrentCell(nextStep.x, nextStep.y);
 		}
-	};
+	}, 800);
 
 	const handleNewExample = () => {
 		generateExample();
@@ -245,6 +245,18 @@ const Notebook = () => {
 			document.removeEventListener("mousedown", handleClickOutside);
 		};
 	}, [showHelp]);
+
+	function useThrottle(fn, delay = 500) {
+		const last = useRef(0);
+	
+		return (...args) => {
+			const now = Date.now();
+			if (now - last.current > delay) {
+				last.current = now;
+				fn(...args);
+			}
+		};
+	}
 
 	function getCurrentCellSize() {
 		const root = document.documentElement;
