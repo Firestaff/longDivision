@@ -87,7 +87,7 @@ const Notebook = () => {
 			const nextStep = plan[planIndex];
 			updateCurrentCell(nextStep.x, nextStep.y);
 		}
-	}, 800);
+	}, 500);
 
 	const handleNewExample = () => {
 		generateExample();
